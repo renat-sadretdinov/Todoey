@@ -12,7 +12,7 @@ class TodoListViewController: UITableViewController {
     // step #1 - rename ViewController.swift to TodoListViewController.swift
     // step #2 - rename ViewController class to TodoListViewController class
     
-    let itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
+    var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
 
     // MARK: Standard two methods:
     override func viewDidLoad() {
@@ -47,5 +47,30 @@ class TodoListViewController: UITableViewController {
         // Removes the gray color of the selected row
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    // MARK: Add New Items:
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            // what will happen once the user clicks the Add Item on our UIAlert
+            
+            // if the textField.text is nil then "New Item" is a default value
+            // itemArray.append(textField.text ?? "New Item")
+            //
+            self.itemArray.append(textField.text!)
+            // the data for tableView will be updated
+            self.tableView.reloadData()
+        }
+        // this closure is triggered once the text field is being added only so
+        // we need to extend the scope of this alert addition to addButtonPressed's scope
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
