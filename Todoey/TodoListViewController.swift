@@ -13,11 +13,15 @@ class TodoListViewController: UITableViewController {
     // step #2 - rename ViewController class to TodoListViewController class
     
     var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
+    let defaults = UserDefaults.standard
 
     // MARK: Standard two methods:
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        // get back data from the user defaults
+        if let items = defaults.array(forKey: "todoListArray") as? [String] {
+            itemArray = items
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -57,8 +61,14 @@ class TodoListViewController: UITableViewController {
             
             // if the textField.text is nil then "New Item" is a default value
             // itemArray.append(textField.text ?? "New Item")
-            //
+            
+            // save data to the local array
             self.itemArray.append(textField.text!)
+            
+            // saving data to the user defaults
+            // specified array would be stored under this particular key
+            self.defaults.set(self.itemArray, forKey: "todoListArray")
+            
             // the data for tableView will be updated
             self.tableView.reloadData()
         }
