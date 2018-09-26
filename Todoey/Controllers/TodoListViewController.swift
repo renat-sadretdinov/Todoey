@@ -14,27 +14,42 @@ class TodoListViewController: UITableViewController {
     
 //    var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
     var itemObjArray = [Item]()
-    let defaults = UserDefaults.standard
+    
+    // Singleton plist but we are gonna create our own plist file
+//    let defaults = UserDefaults.standard
+    
+    // Where our own plist would be stored in the application's sandbox
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     // MARK: Standard two methods:
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // For testing only
-        let newItem01 = Item()
-        newItem01.title = "1st"
-        itemObjArray.append(newItem01)
-        let newItem02 = Item()
-        newItem02.title = "2nd"
-        itemObjArray.append(newItem02)
-        let newItem03 = Item()
-        newItem03.title = "3rd"
-        itemObjArray.append(newItem03)
+        // For test purpose only
+//        let newItem01 = Item()
+//        newItem01.title = "1st"
+//        itemObjArray.append(newItem01)
+//        let newItem02 = Item()
+//        newItem02.title = "2nd"
+//        itemObjArray.append(newItem02)
+//        let newItem03 = Item()
+//        newItem03.title = "3rd"
+//        itemObjArray.append(newItem03)
+
+        // Initial loading from the storage
+        loadItems()
         
         // Get back data from the user defaults
-        if let items = defaults.array(forKey: "todoListArray") as? [Item] {
-            itemObjArray = items
-        }
+//        if let items = defaults.array(forKey: "todoListArray") as? [Item] {
+//            itemObjArray = items
+//        }
+        
+        // The same result as the NSSearchPathForDirectoriesInDomains gets
+        // Because it is an array the value of ".first" needed to get the first item
+//        let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//        print("DATA FILE PATH: ")
+//        print(dataFilePath)
+        // Was moved beyound this method to be a global class's constant
     }
 
     override func didReceiveMemoryWarning() {
@@ -80,7 +95,9 @@ class TodoListViewController: UITableViewController {
         itemObjArray[indexPath.row].done = !itemObjArray[indexPath.row].done
         
         // In order to trigger this delegate again. But it's triggered so many times as there are items in the Model
-        tableView.reloadData()
+        saveItems()
+        // Was moved to the saveItems()
+//        tableView.reloadData()
         
         // Selected cell gets checkmark accessory if being selected and hadn't got it yet
 //        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
@@ -111,10 +128,23 @@ class TodoListViewController: UITableViewController {
             
             // Saving data to the user defaults
             // Specified array would be stored under this particular key
-            self.defaults.set(self.itemObjArray, forKey: "todoListArray")
+            // This uses singleton plist for standard data types only
+            //self.defaults.set(self.itemObjArray, forKey: "todoListArray")
             
-            // the data for tableView will be updated
-            self.tableView.reloadData()
+            // To create our own plist to store user-defined objects
+            // It's moved to the separated method of saveItems()
+//            let encoder = PropertyListEncoder()
+//            do {
+//                let data = try encoder.encode(self.itemObjArray)
+//                try data.write(to: self.dataFilePath!)
+//            } catch {
+//                print("Error encoding item array, \(error)")
+//            }
+            self.saveItems()
+            
+            // The data for tableView will be updated
+            // Was moved to the saveItems()
+            // self.tableView.reloadData()
         }
         // This closure is triggered once the text field is being added only so
         // we need to extend the scope of this alert addition to addButtonPressed's scope
@@ -124,6 +154,29 @@ class TodoListViewController: UITableViewController {
         }
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: Model Manipulation Methods
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemObjArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        tableView.reloadData()
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemObjArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Error decoding item array, \(error)")
+            }
+        }
     }
     
 }

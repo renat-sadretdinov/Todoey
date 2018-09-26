@@ -16,7 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // this method is called first while the app is being launched
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // get path to the application inside the device
-        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true))
+        
+        //print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true))
         /*
          ["/Users/renatsadretdinov/Library/Developer/CoreSimulator/Devices/2D3ADDF4-934F-483F-BB2A-2363B8B71A18/data/Containers/Data/Application/25F2368A-11AA-48CD-AD3F-8B3B8B5A02BB/Documents"]
          The second key is this particular app's sandbox. The remaining path of "Documents" is not we want to find so after the second key we pressed "Library" than "Preferences" in order to get the plist
